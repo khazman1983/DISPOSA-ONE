@@ -200,12 +200,13 @@
                 </div>
                 <div id="grp-aduan" class="sidebar-submenu">
                     <button onclick="switchTab('kerosakan')" id="btn-kerosakan" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-tools mr-3 w-4"></i> Rekod Aduan</button>
+                    <button onclick="switchTab('aduan-native')" id="btn-aduan-native" class="sidebar-item w-full flex items-center pl-14 pr-6 py-2.5 text-sm transition-colors"><i class="fas fa-mobile-alt mr-3 w-4"></i> Rekod Aduan (Aplikasi Pintar)</button>
                 </div>
             </div>
 
             <div class="nav-group-label">Rekod</div>
-            <button onclick="switchTab('tetapan')" id="btn-tetapan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-cog mr-3 w-4"></i> Penetapan Sistem</button>
             <button onclick="switchTab('list')" id="btn-list" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-list mr-3 w-4"></i> Senarai Rekod Tersimpan</button>
+            <button onclick="switchTab('tetapan')" id="btn-tetapan" class="sidebar-item w-full flex items-center px-6 py-3 transition-colors"><i class="fas fa-cog mr-3 w-4"></i> Penetapan Sistem</button>
         </nav>
         <div class="p-4 border-t border-indigo-800">
             <button onclick="handleLogout()" class="w-full flex items-center justify-center gap-2 py-3 text-red-300 hover:text-red-100 hover:bg-red-900/30 rounded-lg transition-all font-semibold"><i class="fas fa-sign-out-alt"></i> Keluar Sistem</button>
@@ -733,6 +734,89 @@
                         <div class="flex justify-end">
                             <button onclick="downloadAllDamagePDF()" class="bg-red-600 text-white px-8 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-red-700"><i class="fas fa-file-pdf"></i> Muat Turun Semua Laporan (PDF)</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== REKOD ADUAN (APLIKASI PINTAR / ANDROID NATIVE) ===================== -->
+            <div id="view-aduan-native" class="hidden">
+                <div class="max-w-6xl mx-auto space-y-6">
+                    <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-[11px] text-indigo-700 leading-relaxed">
+                        <i class="fas fa-mobile-alt mr-1"></i> Rekod ini ditarik terus daripada koleksi Firestore <code>reports</code> yang dihantar oleh Guru / Bukan Guru melalui <b>Aplikasi Android DISPOSA ONE</b> (Aplikasi Pintar) — lengkap dengan gambar kerosakan yang dimuat naik. Klik <b>"Tarik Aduan Terkini"</b> untuk memuatkan aduan terbaharu dari telefon guru.
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl shadow-sm border">
+                        <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6">
+                            <div>
+                                <h3 class="text-xl font-bold text-indigo-900">Rekod Aduan Melalui Aplikasi Pintar</h3>
+                                <p id="aduan-native-sync-status" class="text-[11px] text-gray-400 mt-1">Belum ditarik dari Firestore lagi.</p>
+                            </div>
+                            <div class="flex gap-2 items-center flex-wrap">
+                                <select id="aduan-native-filter-status" onchange="renderNativeReportsTable()" class="p-2 border rounded-lg text-sm">
+                                    <option value="">Semua Status</option>
+                                    <option value="Baharu">Baharu</option>
+                                    <option value="Dalam Tindakan">Dalam Tindakan</option>
+                                    <option value="Selesai">Selesai</option>
+                                </select>
+                                <span id="aduan-native-count" class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border whitespace-nowrap">0 aduan</span>
+                                <button onclick="pullNativeReports()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap"><i class="fas fa-cloud-download-alt"></i> Tarik Aduan Terkini</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto border rounded-xl mb-2">
+                            <table class="w-full text-sm">
+                                <thead class="bg-gray-100 uppercase text-[10px]">
+                                    <tr>
+                                        <th class="p-3 border-b text-center w-10">Bil.</th>
+                                        <th class="p-3 border-b text-left">Tarikh</th>
+                                        <th class="p-3 border-b text-left">Masa</th>
+                                        <th class="p-3 border-b text-left">Dilaporkan Oleh</th>
+                                        <th class="p-3 border-b text-left">Lokasi</th>
+                                        <th class="p-3 border-b text-left">Aset / Jenis</th>
+                                        <th class="p-3 border-b text-center">Gambar</th>
+                                        <th class="p-3 border-b text-left">Status</th>
+                                        <th class="p-3 border-b text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="aduan-native-tbody"></tbody>
+                            </table>
+                        </div>
+                        <p class="text-[11px] text-gray-400"><i class="fas fa-info-circle mr-1"></i>Klik ikon gambar untuk lihat foto penuh & kemaskini status aduan.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal: Butiran Aduan Native (gambar penuh + kemaskini status) -->
+            <div id="native-report-modal" class="hidden fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+                <div class="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden">
+                    <div class="bg-indigo-900 text-white px-6 py-4 flex items-center justify-between">
+                        <h4 class="font-bold text-sm"><i class="fas fa-exclamation-circle mr-2"></i>Butiran Aduan</h4>
+                        <button onclick="closeNativeReportModal()" class="text-indigo-200 hover:text-white"><i class="fas fa-times"></i></button>
+                    </div>
+                    <div class="p-6 max-h-[70vh] overflow-y-auto">
+                        <div id="native-report-photo-box" class="w-full h-56 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden mb-4 border">
+                            <span class="text-gray-400 text-xs">Tiada gambar disertakan</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Dilaporkan Oleh</p><p id="nr-nama" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Tarikh / Masa</p><p id="nr-tarikh-masa" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Lokasi</p><p id="nr-lokasi" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Aset / Jenis</p><p id="nr-aset" class="font-semibold">-</p></div>
+                            <div class="col-span-2"><p class="text-[10px] font-bold text-gray-400 uppercase">Tahap Kerosakan</p><p id="nr-tahap" class="font-semibold">-</p></div>
+                            <div class="col-span-2"><p class="text-[10px] font-bold text-gray-400 uppercase">Keterangan</p><p id="nr-keterangan" class="text-gray-700">-</p></div>
+                        </div>
+                        <div class="mt-5 border-t pt-4">
+                            <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Kemaskini Status Aduan</label>
+                            <div class="flex gap-2">
+                                <select id="nr-status-select" class="flex-1 p-3 bg-gray-50 border rounded-lg text-sm">
+                                    <option>Baharu</option><option>Dalam Tindakan</option><option>Selesai</option>
+                                </select>
+                                <button onclick="saveNativeReportStatus()" class="bg-indigo-600 text-white px-5 py-3 rounded-lg font-bold text-sm hover:bg-indigo-700">Kemaskini</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4 border-t flex justify-between items-center bg-gray-50">
+                        <button onclick="deleteNativeReport()" class="text-red-500 hover:text-red-700 text-sm font-bold"><i class="fas fa-trash mr-1"></i> Padam Rekod</button>
+                        <button onclick="closeNativeReportModal()" class="px-5 py-2 rounded-lg border font-bold text-gray-500 hover:bg-gray-50 text-sm">Tutup</button>
                     </div>
                 </div>
             </div>
@@ -1391,6 +1475,7 @@ let schoolLogoBase64 = localStorage.getItem('disposa_school_logo') || null;
 let assetsList = JSON.parse(localStorage.getItem('disposa_assets_v1')) || [];
 let damageList = JSON.parse(localStorage.getItem('disposa_damage_v1')) || [];
 let usersList = JSON.parse(localStorage.getItem('disposa_users_v1')) || [];
+let nativeReportsList = JSON.parse(localStorage.getItem('disposa_native_reports_v1')) || [];
 let totalAsetChart = null;
 let pelupusanChart = null;
 let pelupusanBulanChart = null;
@@ -1444,6 +1529,7 @@ window.onload = () => {
     updateJawatanOptions();
     updateIdPreview();
     renderUsersTable();
+    renderNativeReportsTable();
     updateFbLastSyncDisplay();
     updateStats();
     renderRecords();
@@ -1460,11 +1546,11 @@ const ALL_TABS = ['dashboard','ai','tetapan','aset','kerosakan','pelupusan','per
     'harta-modal','aset-rendah','pengurusan-lokasi','pengguna','rpt-pa11',
     'kewpa-1','kewpa-2','kewpa-3','kewpa-4','kewpa-5','kewpa-6','kewpa-7','kewpa-8','kewpa-9','kewpa-10','kewpa-11','kewpa-12','kewpa-13','kewpa-14','kewpa-17','kewpa-18','kewpa-19','kewpa-20',
     'arkib-1','arkib-3','arkib-4','arkib-5','arkib-6','arkib-7','arkib-8','arkib-10','arkib-11','arkib-13',
-    'aduan-kerosakan'];
+    'aduan-kerosakan','aduan-native'];
 
 const TAB_TITLES = {
     dashboard:'Dashboard', ai:'Setiausaha AI', tetapan:'Penetapan Sistem', aset:'Daftar Aset',
-    kerosakan:'Laporan Kerosakan', 'aduan-kerosakan':'Aduan Kerosakan',
+    kerosakan:'Laporan Kerosakan', 'aduan-kerosakan':'Aduan Kerosakan', 'aduan-native':'Rekod Aduan (Aplikasi Pintar)',
     pelupusan:'Kew.Pa-15 — Laporan Pemeriksaan Aset Alih (Pelupusan)', perakuan:'Kew.Pa-16 — Sijil Penyaksian Pemusnahan Aset Alih',
     surat:'Surat Iringan — Jana Surat', borang:'Borang Arkib 9/08', borang2:'Borang Arkib 2/08', borang12:'Borang Arkib 12/08', list:'Senarai Rekod Tersimpan',
     'aset-manual':'Pendaftaran Aset - Manual', 'aset-pukal':'Pendaftaran Aset - Pukal',
@@ -1532,6 +1618,7 @@ function switchTab(tab) {
     renderPlaceholderIfNeeded(tab);
     if (tab === 'kerosakan') populateAsetDropdown();
     if (tab === 'pengguna') { updateJawatanOptions(); updateIdPreview(); renderUsersTable(); }
+    if (tab === 'aduan-native') { renderNativeReportsTable(); }
     if (tab === 'dashboard') { updateStats(); setTimeout(initDashboardChart, 30); }
 }
 
@@ -2057,6 +2144,151 @@ function renderDamageTable() {
         tbody.appendChild(row);
     });
     document.getElementById('kerosakan-count').innerText = `${damageList.length} laporan`;
+}
+
+// ============================================================
+//  MODUL REKOD ADUAN NATIVE (APLIKASI PINTAR / ANDROID)
+//  Ditarik daripada koleksi Firestore root "reports"
+// ============================================================
+let _currentNativeReportIdx = null;
+
+function nativeStatusBadge(status) {
+    const map = { 'Baharu': 'bg-blue-100 text-blue-700', 'Dalam Tindakan': 'bg-amber-100 text-amber-700', 'Selesai': 'bg-green-100 text-green-700' };
+    return `<span class="px-2 py-1 rounded-full text-[10px] font-bold ${map[status] || 'bg-gray-100 text-gray-600'}">${status || 'Baharu'}</span>`;
+}
+function setNativeSyncStatus(msg, isError) {
+    const el = document.getElementById('aduan-native-sync-status');
+    if (!el) return;
+    el.className = `text-[11px] mt-1 ${isError ? 'text-red-500' : 'text-emerald-600'}`;
+    el.innerText = msg;
+}
+function splitTarikhMasa(report) {
+    // Sokong pelbagai kemungkinan format field dari Android: tarikh+masa berasingan, atau timestamp tunggal
+    if (report.tarikh || report.masa) {
+        return { tarikh: report.tarikh || '-', masa: report.masa || '-' };
+    }
+    const ts = report.createdAt || report.timestamp || report.tarikhMasa;
+    if (ts) {
+        let d;
+        if (ts.toDate) d = ts.toDate(); // Firestore Timestamp
+        else if (ts.seconds) d = new Date(ts.seconds * 1000);
+        else d = new Date(ts);
+        if (!isNaN(d.getTime())) {
+            return { tarikh: d.toLocaleDateString('ms-MY'), masa: d.toLocaleTimeString('en-US') };
+        }
+    }
+    return { tarikh: '-', masa: '-' };
+}
+async function pullNativeReports() {
+    setNativeSyncStatus('Menarik aduan terkini dari Firestore...', false);
+    try {
+        const { db } = initFirebaseIfNeeded();
+        const snap = await db.collection('reports').orderBy('createdAt', 'desc').get().catch(() => db.collection('reports').get());
+        const list = [];
+        snap.forEach(doc => {
+            const d = doc.data();
+            list.push({
+                _docId: doc.id,
+                namaGuru: d.namaGuru || d.nama || d.guruNama || 'Tidak diketahui',
+                guruId: d.guruId || '',
+                lokasi: d.lokasi || '-',
+                jenisAset: d.jenisAset || d.jenis || '-',
+                noAset: d.noAset || d.no_aset || '',
+                tahapKerosakan: d.tahapKerosakan || d.tahap || '-',
+                keterangan: d.keterangan || d.catatan || '-',
+                gambarUrl: d.gambarUrl || d.gambar || d.imageUrl || '',
+                status: d.status || 'Baharu',
+                tarikh: d.tarikh || '',
+                masa: d.masa || '',
+                createdAt: d.createdAt || d.timestamp || null
+            });
+        });
+        nativeReportsList = list;
+        localStorage.setItem('disposa_native_reports_v1', JSON.stringify(nativeReportsList));
+        renderNativeReportsTable();
+        setNativeSyncStatus(`Berjaya ditarik: ${list.length} aduan dari koleksi "reports" (kemaskini terakhir: ${new Date().toLocaleString('ms-MY')}).`, false);
+    } catch (err) {
+        setNativeSyncStatus(`Gagal menarik aduan: ${err.message}`, true);
+    }
+}
+function renderNativeReportsTable() {
+    const tbody = document.getElementById('aduan-native-tbody');
+    if (!tbody) return;
+    const filterStatus = document.getElementById('aduan-native-filter-status')?.value || '';
+    const filtered = nativeReportsList.filter(r => !filterStatus || r.status === filterStatus);
+    tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="9" class="p-8 text-center text-gray-400">Tiada aduan lagi. Klik "Tarik Aduan Terkini" untuk muatkan dari Aplikasi Android.</td></tr>`;
+    filtered.forEach((r, i) => {
+        const idx = nativeReportsList.indexOf(r);
+        const { tarikh, masa } = splitTarikhMasa(r);
+        const row = document.createElement('tr');
+        row.innerHTML = `<td class="p-3 border-b text-center text-xs font-bold text-gray-400">${i + 1}</td>
+            <td class="p-3 border-b text-xs">${tarikh}</td>
+            <td class="p-3 border-b text-xs">${masa}</td>
+            <td class="p-3 border-b text-sm font-semibold">${r.namaGuru}</td>
+            <td class="p-3 border-b text-xs">${r.lokasi}</td>
+            <td class="p-3 border-b text-xs">${r.jenisAset}${r.noAset ? ' — ' + r.noAset : ''}</td>
+            <td class="p-3 border-b text-center">${r.gambarUrl ? `<button onclick="showNativeReportDetail(${idx})" class="text-indigo-500 hover:text-indigo-700" title="Lihat Gambar"><i class="fas fa-image"></i></button>` : '<span class="text-gray-300 text-xs">-</span>'}</td>
+            <td class="p-3 border-b">${nativeStatusBadge(r.status)}</td>
+            <td class="p-3 border-b text-right whitespace-nowrap">
+                <button onclick="showNativeReportDetail(${idx})" class="text-indigo-500 hover:text-indigo-700" title="Lihat Butiran"><i class="fas fa-eye"></i></button>
+            </td>`;
+        tbody.appendChild(row);
+    });
+    document.getElementById('aduan-native-count').innerText = `${filtered.length} / ${nativeReportsList.length} aduan`;
+}
+function showNativeReportDetail(idx) {
+    const r = nativeReportsList[idx];
+    if (!r) return;
+    _currentNativeReportIdx = idx;
+    const { tarikh, masa } = splitTarikhMasa(r);
+    document.getElementById('nr-nama').innerText = r.namaGuru;
+    document.getElementById('nr-tarikh-masa').innerText = `${tarikh}  ${masa}`;
+    document.getElementById('nr-lokasi').innerText = r.lokasi;
+    document.getElementById('nr-aset').innerText = `${r.jenisAset}${r.noAset ? ' — ' + r.noAset : ''}`;
+    document.getElementById('nr-tahap').innerText = r.tahapKerosakan;
+    document.getElementById('nr-keterangan').innerText = r.keterangan;
+    document.getElementById('nr-status-select').value = r.status || 'Baharu';
+    const photoBox = document.getElementById('native-report-photo-box');
+    photoBox.innerHTML = r.gambarUrl
+        ? `<img src="${r.gambarUrl}" class="w-full h-full object-contain" alt="Gambar aduan">`
+        : `<span class="text-gray-400 text-xs">Tiada gambar disertakan</span>`;
+    document.getElementById('native-report-modal').classList.remove('hidden');
+}
+function closeNativeReportModal() {
+    document.getElementById('native-report-modal').classList.add('hidden');
+    _currentNativeReportIdx = null;
+}
+async function saveNativeReportStatus() {
+    if (_currentNativeReportIdx === null) return;
+    const r = nativeReportsList[_currentNativeReportIdx];
+    const newStatus = document.getElementById('nr-status-select').value;
+    r.status = newStatus;
+    localStorage.setItem('disposa_native_reports_v1', JSON.stringify(nativeReportsList));
+    renderNativeReportsTable();
+    try {
+        const { db } = initFirebaseIfNeeded();
+        await db.collection('reports').doc(r._docId).update({ status: newStatus });
+        setNativeSyncStatus(`Status aduan dikemaskini kepada "${newStatus}" (turut disegerakkan ke Firestore).`, false);
+    } catch (err) {
+        setNativeSyncStatus(`Status dikemaskini tempatan sahaja — gagal segerak ke Firestore (${err.message}).`, true);
+    }
+    closeNativeReportModal();
+}
+async function deleteNativeReport() {
+    if (_currentNativeReportIdx === null) return;
+    if (!confirm('Padam rekod aduan ini? Tindakan ini tidak boleh dibatalkan.')) return;
+    const r = nativeReportsList[_currentNativeReportIdx];
+    nativeReportsList.splice(_currentNativeReportIdx, 1);
+    localStorage.setItem('disposa_native_reports_v1', JSON.stringify(nativeReportsList));
+    renderNativeReportsTable();
+    try {
+        const { db } = initFirebaseIfNeeded();
+        await db.collection('reports').doc(r._docId).delete();
+        setNativeSyncStatus('Rekod aduan turut dipadam dari Firestore.', false);
+    } catch (err) {
+        setNativeSyncStatus(`Dipadam tempatan sahaja — gagal padam di Firestore (${err.message}).`, true);
+    }
+    closeNativeReportModal();
 }
 
 // ============================================================
