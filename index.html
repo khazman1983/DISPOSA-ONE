@@ -772,7 +772,8 @@
                                         <th class="p-3 border-b text-left">Masa</th>
                                         <th class="p-3 border-b text-left">Dilaporkan Oleh</th>
                                         <th class="p-3 border-b text-left">Lokasi</th>
-                                        <th class="p-3 border-b text-left">Aset / Jenis</th>
+                                        <th class="p-3 border-b text-left">Aset</th>
+                                        <th class="p-3 border-b text-left">Tahap</th>
                                         <th class="p-3 border-b text-center">Gambar</th>
                                         <th class="p-3 border-b text-left">Status</th>
                                     </tr>
@@ -792,18 +793,40 @@
                         <h4 class="font-bold text-sm"><i class="fas fa-exclamation-circle mr-2"></i>Butiran Aduan</h4>
                         <button onclick="closeNativeReportModal()" class="text-indigo-200 hover:text-white"><i class="fas fa-times"></i></button>
                     </div>
-                    <div class="p-6 max-h-[70vh] overflow-y-auto">
-                        <div id="native-report-photo-box" class="w-full h-56 bg-gray-100 rounded-xl flex items-center justify-center overflow-hidden mb-4 border">
-                            <span class="text-gray-400 text-xs">Tiada gambar disertakan</span>
+                    <div class="p-6 max-h-[75vh] overflow-y-auto">
+                        <div id="native-report-photo-box" class="grid grid-cols-3 gap-2 mb-4">
+                            <span class="col-span-3 text-gray-400 text-xs text-center py-8 bg-gray-50 rounded-xl border">Tiada gambar disertakan</span>
                         </div>
-                        <div class="grid grid-cols-2 gap-3 text-sm">
-                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Dilaporkan Oleh</p><p id="nr-nama" class="font-semibold">-</p></div>
+
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase mb-2 tracking-wide">A. Maklumat Pelapor (Auto)</p>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Nama Guru</p><p id="nr-nama" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Jawatan</p><p id="nr-jawatan" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Emel / Telefon</p><p id="nr-emel" class="font-semibold">-</p></div>
                             <div><p class="text-[10px] font-bold text-gray-400 uppercase">Tarikh / Masa</p><p id="nr-tarikh-masa" class="font-semibold">-</p></div>
-                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Lokasi</p><p id="nr-lokasi" class="font-semibold">-</p></div>
-                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Aset / Jenis</p><p id="nr-aset" class="font-semibold">-</p></div>
-                            <div class="col-span-2"><p class="text-[10px] font-bold text-gray-400 uppercase">Tahap Kerosakan</p><p id="nr-tahap" class="font-semibold">-</p></div>
-                            <div class="col-span-2"><p class="text-[10px] font-bold text-gray-400 uppercase">Keterangan</p><p id="nr-keterangan" class="text-gray-700">-</p></div>
                         </div>
+
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase mb-2 tracking-wide">B &amp; C. Lokasi Dan Aset</p>
+                        <div class="grid grid-cols-2 gap-3 text-sm mb-4">
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Lokasi Kerosakan</p><p id="nr-lokasi" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Kategori Aset</p><p id="nr-kategori" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Nama Aset</p><p id="nr-aset" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">No. Inventori / Kod QR</p><p id="nr-inventori" class="font-semibold">-</p></div>
+                        </div>
+
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase mb-2 tracking-wide">E &amp; F. Kerosakan</p>
+                        <div class="grid grid-cols-1 gap-3 text-sm mb-4">
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Tahap Kerosakan</p><p id="nr-tahap" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Keterangan Kerosakan</p><p id="nr-keterangan" class="text-gray-700">-</p></div>
+                        </div>
+
+                        <p class="text-[10px] font-bold text-indigo-500 uppercase mb-2 tracking-wide">G, H &amp; I. Keputusan &amp; Penghantaran</p>
+                        <div class="grid grid-cols-1 gap-3 text-sm">
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Cadangan Tindakan</p><p id="nr-tindakan" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Keutamaan Laporan</p><p id="nr-keutamaan" class="font-semibold">-</p></div>
+                            <div><p class="text-[10px] font-bold text-gray-400 uppercase">Dihantar Kepada Pegawai</p><p id="nr-hantar" class="font-semibold">-</p></div>
+                        </div>
+
                         <div class="mt-5 border-t pt-4">
                             <label class="text-[10px] font-bold text-gray-500 uppercase mb-1 block">Kemaskini Status Aduan</label>
                             <div class="flex gap-2">
@@ -2149,12 +2172,23 @@ function renderDamageTable() {
 // ============================================================
 //  MODUL REKOD ADUAN NATIVE (APLIKASI PINTAR / ANDROID)
 //  Ditarik daripada koleksi Firestore root "reports"
+//  Medan disesuaikan dengan borang Aduan Kerosakan Android (Seksyen A-I)
 // ============================================================
 let _currentNativeReportIdx = null;
 
 function nativeStatusBadge(status) {
     const map = { 'Baharu': 'bg-blue-100 text-blue-700', 'Dalam Tindakan': 'bg-amber-100 text-amber-700', 'Selesai': 'bg-green-100 text-green-700' };
     return `<span class="px-2 py-1 rounded-full text-[10px] font-bold ${map[status] || 'bg-gray-100 text-gray-600'}">${status || 'Baharu'}</span>`;
+}
+function tahapKerosakanBadge(tahap) {
+    const map = {
+        'Ringan': 'bg-green-100 text-green-700',
+        'Sederhana': 'bg-yellow-100 text-yellow-700',
+        'Teruk': 'bg-orange-100 text-orange-700',
+        'Tidak Boleh': 'bg-red-100 text-red-700',
+        'Tidak Boleh Guna': 'bg-red-100 text-red-700'
+    };
+    return `<span class="px-2 py-1 rounded-full text-[10px] font-bold ${map[tahap] || 'bg-gray-100 text-gray-600'}">${tahap || '-'}</span>`;
 }
 function setNativeSyncStatus(msg, isError) {
     const el = document.getElementById('aduan-native-sync-status');
@@ -2163,11 +2197,16 @@ function setNativeSyncStatus(msg, isError) {
     el.innerText = msg;
 }
 function splitTarikhMasa(report) {
-    // Sokong pelbagai kemungkinan format field dari Android: tarikh+masa berasingan, atau timestamp tunggal
+    // A. Maklumat Pelapor (Auto) — Android papar sebagai satu rentetan "07/07/2026 • 23:07:40"
     if (report.tarikh || report.masa) {
         return { tarikh: report.tarikh || '-', masa: report.masa || '-' };
     }
-    const ts = report.createdAt || report.timestamp || report.tarikhMasa;
+    if (report.tarikhMasa) {
+        const parts = String(report.tarikhMasa).split(/•|,|\u2022/).map(s => s.trim()).filter(Boolean);
+        if (parts.length >= 2) return { tarikh: parts[0], masa: parts[1] };
+        if (parts.length === 1) return { tarikh: parts[0], masa: '-' };
+    }
+    const ts = report.createdAt || report.timestamp;
     if (ts) {
         let d;
         if (ts.toDate) d = ts.toDate(); // Firestore Timestamp
@@ -2180,6 +2219,10 @@ function splitTarikhMasa(report) {
     return { tarikh: '-', masa: '-' };
 }
 async function pullNativeReports() {
+    if (!FIREBASE_CONFIG.apiKey || FIREBASE_CONFIG.apiKey === 'GANTI_DENGAN_API_KEY_ANDA') {
+        setNativeSyncStatus('Menunggu konfigurasi Firebase untuk menarik aduan dari Aplikasi Android.', false);
+        return;
+    }
     setNativeSyncStatus('Menarik aduan terkini dari Firestore...', false);
     try {
         const { db } = initFirebaseIfNeeded();
@@ -2187,19 +2230,42 @@ async function pullNativeReports() {
         const list = [];
         snap.forEach(doc => {
             const d = doc.data();
+            // Gambar Kerosakan (Maksimum 3) — sokong array (gambar/gambarList/images) atau medan tunggal gambar1/2/3
+            let gambarList = [];
+            if (Array.isArray(d.gambar)) gambarList = d.gambar;
+            else if (Array.isArray(d.gambarList)) gambarList = d.gambarList;
+            else if (Array.isArray(d.images)) gambarList = d.images;
+            else {
+                ['gambar1', 'gambar2', 'gambar3', 'gambarUrl', 'imageUrl'].forEach(k => { if (d[k]) gambarList.push(d[k]); });
+            }
             list.push({
                 _docId: doc.id,
+                // A. Maklumat Pelapor (Auto)
                 namaGuru: d.namaGuru || d.nama || d.guruNama || 'Tidak diketahui',
                 guruId: d.guruId || '',
+                jawatan: d.jawatan || '-',
+                emel: d.emel || d.telefon || d.noTelefon || '-',
+                // B. Lokasi Kerosakan
                 lokasi: d.lokasi || '-',
-                jenisAset: d.jenisAset || d.jenis || '-',
-                noAset: d.noAset || d.no_aset || '',
+                // C. Kategori & Jenis Aset
+                kategoriAset: d.kategoriAset || d.kategori || '-',
+                namaAset: d.namaAset || d.nama_aset || d.jenisAset || '-',
+                noInventori: d.noInventori || d.kodQR || d.no_inventori || '',
+                // D. Gambar Kerosakan
+                gambarList,
+                // E. Tahap Kerosakan
                 tahapKerosakan: d.tahapKerosakan || d.tahap || '-',
+                // F. Keterangan Kerosakan
                 keterangan: d.keterangan || d.catatan || '-',
-                gambarUrl: d.gambarUrl || d.gambar || d.imageUrl || '',
+                // G, H, I. Keputusan & Penghantaran
+                cadanganTindakan: d.cadanganTindakan || d.tindakan || '-',
+                keutamaan: d.keutamaan || d.keutamaanLaporan || '-',
+                hantarKepada: d.hantarKepada || d.pegawai || d.hantarKepadaPegawai || '-',
+                // Status pemprosesan (bukan sebahagian borang, digunakan admin)
                 status: d.status || 'Baharu',
                 tarikh: d.tarikh || '',
                 masa: d.masa || '',
+                tarikhMasa: d.tarikhMasa || '',
                 createdAt: d.createdAt || d.timestamp || null
             });
         });
@@ -2216,10 +2282,11 @@ function renderNativeReportsTable() {
     if (!tbody) return;
     const filterStatus = document.getElementById('aduan-native-filter-status')?.value || '';
     const filtered = nativeReportsList.filter(r => !filterStatus || r.status === filterStatus);
-    tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="8" class="p-8 text-center text-gray-400">Tiada aduan lagi daripada Aplikasi Android.</td></tr>`;
+    tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="9" class="p-8 text-center text-gray-400">Tiada aduan lagi daripada Aplikasi Android.</td></tr>`;
     filtered.forEach((r, i) => {
         const idx = nativeReportsList.indexOf(r);
         const { tarikh, masa } = splitTarikhMasa(r);
+        const gambarCount = (r.gambarList || []).length;
         const row = document.createElement('tr');
         row.className = 'cursor-pointer hover:bg-gray-50';
         row.onclick = () => showNativeReportDetail(idx);
@@ -2228,8 +2295,9 @@ function renderNativeReportsTable() {
             <td class="p-3 border-b text-xs">${masa}</td>
             <td class="p-3 border-b text-sm font-semibold">${r.namaGuru}</td>
             <td class="p-3 border-b text-xs">${r.lokasi}</td>
-            <td class="p-3 border-b text-xs">${r.jenisAset}${r.noAset ? ' — ' + r.noAset : ''}</td>
-            <td class="p-3 border-b text-center">${r.gambarUrl ? `<i class="fas fa-image text-indigo-500" title="Ada gambar"></i>` : '<span class="text-gray-300 text-xs">-</span>'}</td>
+            <td class="p-3 border-b text-xs">${r.namaAset}${r.kategoriAset && r.kategoriAset !== '-' ? ' (' + r.kategoriAset + ')' : ''}</td>
+            <td class="p-3 border-b">${tahapKerosakanBadge(r.tahapKerosakan)}</td>
+            <td class="p-3 border-b text-center">${gambarCount ? `<i class="fas fa-image text-indigo-500" title="${gambarCount} gambar"></i> <span class="text-[10px] text-gray-400">${gambarCount}</span>` : '<span class="text-gray-300 text-xs">-</span>'}</td>
             <td class="p-3 border-b">${nativeStatusBadge(r.status)}</td>`;
         tbody.appendChild(row);
     });
@@ -2244,9 +2312,10 @@ function printNativeReports() {
         return `<tr>
             <td style="text-align:center;">${i + 1}</td>
             <td>${tarikh}</td><td>${masa}</td>
-            <td>${r.namaGuru}</td><td>${r.lokasi}</td>
-            <td>${r.jenisAset}${r.noAset ? ' — ' + r.noAset : ''}</td>
-            <td>${r.gambarUrl ? 'Ya' : 'Tiada'}</td>
+            <td>${r.namaGuru}</td><td>${r.jawatan}</td><td>${r.lokasi}</td>
+            <td>${r.namaAset} (${r.kategoriAset})</td>
+            <td>${r.tahapKerosakan}</td>
+            <td>${(r.gambarList || []).length}</td>
             <td>${r.status}</td>
         </tr>`;
     }).join('');
@@ -2256,13 +2325,13 @@ function printNativeReports() {
         <style>
             body{font-family:Arial,sans-serif;padding:24px;}
             h2{margin-bottom:2px;} p.sub{color:#666;margin-top:0;font-size:12px;}
-            table{width:100%;border-collapse:collapse;font-size:12px;margin-top:16px;}
+            table{width:100%;border-collapse:collapse;font-size:11px;margin-top:16px;}
             th,td{border:1px solid #ccc;padding:6px 8px;text-align:left;}
-            th{background:#f3f4f6;text-transform:uppercase;font-size:10px;}
+            th{background:#f3f4f6;text-transform:uppercase;font-size:9px;}
         </style></head><body>
         <h2>Rekod Aduan Melalui Aplikasi Pintar</h2>
         <p class="sub">${namaSekolah} — Dijana pada ${new Date().toLocaleString('ms-MY')}</p>
-        <table><thead><tr><th>Bil.</th><th>Tarikh</th><th>Masa</th><th>Dilaporkan Oleh</th><th>Lokasi</th><th>Aset / Jenis</th><th>Gambar</th><th>Status</th></tr></thead>
+        <table><thead><tr><th>Bil.</th><th>Tarikh</th><th>Masa</th><th>Dilaporkan Oleh</th><th>Jawatan</th><th>Lokasi</th><th>Aset (Kategori)</th><th>Tahap</th><th>Bil. Gambar</th><th>Status</th></tr></thead>
         <tbody>${rows}</tbody></table>
         </body></html>`);
     w.document.close();
@@ -2273,12 +2342,17 @@ function exportNativeReportsData() {
     if (!nativeReportsList.length) { alert('Tiada rekod aduan untuk dieksport.'); return; }
     const filterStatus = document.getElementById('aduan-native-filter-status')?.value || '';
     const filtered = nativeReportsList.filter(r => !filterStatus || r.status === filterStatus);
-    const headers = ['Bil.', 'Tarikh', 'Masa', 'Dilaporkan Oleh', 'Lokasi', 'Aset/Jenis', 'No. Aset', 'Tahap Kerosakan', 'Keterangan', 'Gambar URL', 'Status'];
+    const headers = ['Bil.', 'Tarikh', 'Masa', 'Nama Guru', 'Jawatan', 'Emel/Telefon', 'Lokasi', 'Kategori Aset', 'Nama Aset', 'No. Inventori', 'Tahap Kerosakan', 'Keterangan', 'Cadangan Tindakan', 'Keutamaan', 'Hantar Kepada', 'Bil. Gambar', 'Pautan Gambar', 'Status'];
     const csvRows = [headers.join(',')];
     filtered.forEach((r, i) => {
         const { tarikh, masa } = splitTarikhMasa(r);
         const esc = (v) => `"${String(v || '').replace(/"/g, '""')}"`;
-        csvRows.push([i + 1, tarikh, masa, esc(r.namaGuru), esc(r.lokasi), esc(r.jenisAset), esc(r.noAset), esc(r.tahapKerosakan), esc(r.keterangan), esc(r.gambarUrl), esc(r.status)].join(','));
+        csvRows.push([
+            i + 1, tarikh, masa, esc(r.namaGuru), esc(r.jawatan), esc(r.emel), esc(r.lokasi),
+            esc(r.kategoriAset), esc(r.namaAset), esc(r.noInventori), esc(r.tahapKerosakan),
+            esc(r.keterangan), esc(r.cadanganTindakan), esc(r.keutamaan), esc(r.hantarKepada),
+            (r.gambarList || []).length, esc((r.gambarList || []).join(' | ')), esc(r.status)
+        ].join(','));
     });
     const csvContent = '\uFEFF' + csvRows.join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -2297,16 +2371,24 @@ function showNativeReportDetail(idx) {
     _currentNativeReportIdx = idx;
     const { tarikh, masa } = splitTarikhMasa(r);
     document.getElementById('nr-nama').innerText = r.namaGuru;
-    document.getElementById('nr-tarikh-masa').innerText = `${tarikh}  ${masa}`;
+    document.getElementById('nr-jawatan').innerText = r.jawatan;
+    document.getElementById('nr-emel').innerText = r.emel;
+    document.getElementById('nr-tarikh-masa').innerText = `${tarikh}  •  ${masa}`;
     document.getElementById('nr-lokasi').innerText = r.lokasi;
-    document.getElementById('nr-aset').innerText = `${r.jenisAset}${r.noAset ? ' — ' + r.noAset : ''}`;
-    document.getElementById('nr-tahap').innerText = r.tahapKerosakan;
+    document.getElementById('nr-kategori').innerText = r.kategoriAset;
+    document.getElementById('nr-aset').innerText = r.namaAset;
+    document.getElementById('nr-inventori').innerText = r.noInventori || '-';
+    document.getElementById('nr-tahap').innerHTML = tahapKerosakanBadge(r.tahapKerosakan);
     document.getElementById('nr-keterangan').innerText = r.keterangan;
+    document.getElementById('nr-tindakan').innerText = r.cadanganTindakan;
+    document.getElementById('nr-keutamaan').innerText = r.keutamaan;
+    document.getElementById('nr-hantar').innerText = r.hantarKepada;
     document.getElementById('nr-status-select').value = r.status || 'Baharu';
     const photoBox = document.getElementById('native-report-photo-box');
-    photoBox.innerHTML = r.gambarUrl
-        ? `<img src="${r.gambarUrl}" class="w-full h-full object-contain" alt="Gambar aduan">`
-        : `<span class="text-gray-400 text-xs">Tiada gambar disertakan</span>`;
+    const gambarList = r.gambarList || [];
+    photoBox.innerHTML = gambarList.length
+        ? gambarList.map(url => `<img src="${url}" class="w-full h-24 object-cover rounded-lg border cursor-pointer" onclick="window.open('${url}', '_blank')" alt="Gambar aduan">`).join('')
+        : `<span class="col-span-3 text-gray-400 text-xs text-center py-8 bg-gray-50 rounded-xl border">Tiada gambar disertakan</span>`;
     document.getElementById('native-report-modal').classList.remove('hidden');
 }
 function closeNativeReportModal() {
