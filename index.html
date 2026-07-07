@@ -742,7 +742,7 @@
             <div id="view-aduan-native" class="hidden">
                 <div class="max-w-6xl mx-auto space-y-6">
                     <div class="bg-indigo-50 border border-indigo-200 p-4 rounded-xl text-[11px] text-indigo-700 leading-relaxed">
-                        <i class="fas fa-mobile-alt mr-1"></i> Rekod ini ditarik terus daripada koleksi Firestore <code>reports</code> yang dihantar oleh Guru / Bukan Guru melalui <b>Aplikasi Android DISPOSA ONE</b> (Aplikasi Pintar) — lengkap dengan gambar kerosakan yang dimuat naik. Klik <b>"Tarik Aduan Terkini"</b> untuk memuatkan aduan terbaharu dari telefon guru.
+                        <i class="fas fa-mobile-alt mr-1"></i> Rekod ini ditarik terus daripada koleksi Firestore <code>reports</code> yang dihantar oleh Guru / Bukan Guru melalui <b>Aplikasi Android DISPOSA ONE</b> (Aplikasi Pintar) — lengkap dengan gambar kerosakan yang dimuat naik. Senarai dikemaskini secara automatik apabila tab ini dibuka.
                     </div>
 
                     <div class="bg-white p-6 rounded-xl shadow-sm border">
@@ -759,11 +759,12 @@
                                     <option value="Selesai">Selesai</option>
                                 </select>
                                 <span id="aduan-native-count" class="text-xs font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border whitespace-nowrap">0 aduan</span>
-                                <button onclick="pullNativeReports()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap"><i class="fas fa-cloud-download-alt"></i> Tarik Aduan Terkini</button>
+                                <button onclick="printNativeReports()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-700 hover:bg-gray-800 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap"><i class="fas fa-print"></i> Cetak</button>
+                                <button onclick="exportNativeReportsData()" class="flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg text-sm transition-all whitespace-nowrap"><i class="fas fa-file-export"></i> Export Data</button>
                             </div>
                         </div>
                         <div class="overflow-x-auto border rounded-xl mb-2">
-                            <table class="w-full text-sm">
+                            <table class="w-full text-sm" id="aduan-native-table">
                                 <thead class="bg-gray-100 uppercase text-[10px]">
                                     <tr>
                                         <th class="p-3 border-b text-center w-10">Bil.</th>
@@ -774,13 +775,12 @@
                                         <th class="p-3 border-b text-left">Aset / Jenis</th>
                                         <th class="p-3 border-b text-center">Gambar</th>
                                         <th class="p-3 border-b text-left">Status</th>
-                                        <th class="p-3 border-b text-right">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody id="aduan-native-tbody"></tbody>
                             </table>
                         </div>
-                        <p class="text-[11px] text-gray-400"><i class="fas fa-info-circle mr-1"></i>Klik ikon gambar untuk lihat foto penuh & kemaskini status aduan.</p>
+                        <p class="text-[11px] text-gray-400 print:hidden"><i class="fas fa-info-circle mr-1"></i>Klik ikon gambar untuk lihat foto penuh & kemaskini status aduan.</p>
                     </div>
                 </div>
             </div>
@@ -1618,7 +1618,7 @@ function switchTab(tab) {
     renderPlaceholderIfNeeded(tab);
     if (tab === 'kerosakan') populateAsetDropdown();
     if (tab === 'pengguna') { updateJawatanOptions(); updateIdPreview(); renderUsersTable(); }
-    if (tab === 'aduan-native') { renderNativeReportsTable(); }
+    if (tab === 'aduan-native') { renderNativeReportsTable(); pullNativeReports(); }
     if (tab === 'dashboard') { updateStats(); setTimeout(initDashboardChart, 30); }
 }
 
@@ -2216,25 +2216,80 @@ function renderNativeReportsTable() {
     if (!tbody) return;
     const filterStatus = document.getElementById('aduan-native-filter-status')?.value || '';
     const filtered = nativeReportsList.filter(r => !filterStatus || r.status === filterStatus);
-    tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="9" class="p-8 text-center text-gray-400">Tiada aduan lagi. Klik "Tarik Aduan Terkini" untuk muatkan dari Aplikasi Android.</td></tr>`;
+    tbody.innerHTML = filtered.length ? '' : `<tr><td colspan="8" class="p-8 text-center text-gray-400">Tiada aduan lagi daripada Aplikasi Android.</td></tr>`;
     filtered.forEach((r, i) => {
         const idx = nativeReportsList.indexOf(r);
         const { tarikh, masa } = splitTarikhMasa(r);
         const row = document.createElement('tr');
+        row.className = 'cursor-pointer hover:bg-gray-50';
+        row.onclick = () => showNativeReportDetail(idx);
         row.innerHTML = `<td class="p-3 border-b text-center text-xs font-bold text-gray-400">${i + 1}</td>
             <td class="p-3 border-b text-xs">${tarikh}</td>
             <td class="p-3 border-b text-xs">${masa}</td>
             <td class="p-3 border-b text-sm font-semibold">${r.namaGuru}</td>
             <td class="p-3 border-b text-xs">${r.lokasi}</td>
             <td class="p-3 border-b text-xs">${r.jenisAset}${r.noAset ? ' — ' + r.noAset : ''}</td>
-            <td class="p-3 border-b text-center">${r.gambarUrl ? `<button onclick="showNativeReportDetail(${idx})" class="text-indigo-500 hover:text-indigo-700" title="Lihat Gambar"><i class="fas fa-image"></i></button>` : '<span class="text-gray-300 text-xs">-</span>'}</td>
-            <td class="p-3 border-b">${nativeStatusBadge(r.status)}</td>
-            <td class="p-3 border-b text-right whitespace-nowrap">
-                <button onclick="showNativeReportDetail(${idx})" class="text-indigo-500 hover:text-indigo-700" title="Lihat Butiran"><i class="fas fa-eye"></i></button>
-            </td>`;
+            <td class="p-3 border-b text-center">${r.gambarUrl ? `<i class="fas fa-image text-indigo-500" title="Ada gambar"></i>` : '<span class="text-gray-300 text-xs">-</span>'}</td>
+            <td class="p-3 border-b">${nativeStatusBadge(r.status)}</td>`;
         tbody.appendChild(row);
     });
     document.getElementById('aduan-native-count').innerText = `${filtered.length} / ${nativeReportsList.length} aduan`;
+}
+function printNativeReports() {
+    if (!nativeReportsList.length) { alert('Tiada rekod aduan untuk dicetak.'); return; }
+    const filterStatus = document.getElementById('aduan-native-filter-status')?.value || '';
+    const filtered = nativeReportsList.filter(r => !filterStatus || r.status === filterStatus);
+    const rows = filtered.map((r, i) => {
+        const { tarikh, masa } = splitTarikhMasa(r);
+        return `<tr>
+            <td style="text-align:center;">${i + 1}</td>
+            <td>${tarikh}</td><td>${masa}</td>
+            <td>${r.namaGuru}</td><td>${r.lokasi}</td>
+            <td>${r.jenisAset}${r.noAset ? ' — ' + r.noAset : ''}</td>
+            <td>${r.gambarUrl ? 'Ya' : 'Tiada'}</td>
+            <td>${r.status}</td>
+        </tr>`;
+    }).join('');
+    const namaSekolah = document.getElementById('h_nama_sekolah')?.value || '';
+    const w = window.open('', '_blank');
+    w.document.write(`<html><head><title>Rekod Aduan (Aplikasi Pintar)</title>
+        <style>
+            body{font-family:Arial,sans-serif;padding:24px;}
+            h2{margin-bottom:2px;} p.sub{color:#666;margin-top:0;font-size:12px;}
+            table{width:100%;border-collapse:collapse;font-size:12px;margin-top:16px;}
+            th,td{border:1px solid #ccc;padding:6px 8px;text-align:left;}
+            th{background:#f3f4f6;text-transform:uppercase;font-size:10px;}
+        </style></head><body>
+        <h2>Rekod Aduan Melalui Aplikasi Pintar</h2>
+        <p class="sub">${namaSekolah} — Dijana pada ${new Date().toLocaleString('ms-MY')}</p>
+        <table><thead><tr><th>Bil.</th><th>Tarikh</th><th>Masa</th><th>Dilaporkan Oleh</th><th>Lokasi</th><th>Aset / Jenis</th><th>Gambar</th><th>Status</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+        </body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(() => w.print(), 300);
+}
+function exportNativeReportsData() {
+    if (!nativeReportsList.length) { alert('Tiada rekod aduan untuk dieksport.'); return; }
+    const filterStatus = document.getElementById('aduan-native-filter-status')?.value || '';
+    const filtered = nativeReportsList.filter(r => !filterStatus || r.status === filterStatus);
+    const headers = ['Bil.', 'Tarikh', 'Masa', 'Dilaporkan Oleh', 'Lokasi', 'Aset/Jenis', 'No. Aset', 'Tahap Kerosakan', 'Keterangan', 'Gambar URL', 'Status'];
+    const csvRows = [headers.join(',')];
+    filtered.forEach((r, i) => {
+        const { tarikh, masa } = splitTarikhMasa(r);
+        const esc = (v) => `"${String(v || '').replace(/"/g, '""')}"`;
+        csvRows.push([i + 1, tarikh, masa, esc(r.namaGuru), esc(r.lokasi), esc(r.jenisAset), esc(r.noAset), esc(r.tahapKerosakan), esc(r.keterangan), esc(r.gambarUrl), esc(r.status)].join(','));
+    });
+    const csvContent = '\uFEFF' + csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Rekod_Aduan_Aplikasi_Pintar_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 }
 function showNativeReportDetail(idx) {
     const r = nativeReportsList[idx];
